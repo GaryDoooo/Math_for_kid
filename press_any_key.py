@@ -45,14 +45,3 @@ def getch_timeout(timeout=0.01):
             return s
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old)
-    #  def waiting_keys(self):
-        #  while not self.ended:
-        #  # press_any_key_to_continue()
-        #  # print "a key ",
-        #  #timeout = 10
-        #  # while is_alive(): # is_alive is a method to check some stuffs, might take 5 secs
-        #  rlist, _, _ = select([sys.stdin], [], [], 0.001)
-        #  if rlist:
-        #  s = sys.stdin.readline()
-        #  print repr(s), s
-        #  # handle(s) # handle is a method to handle and react according to input

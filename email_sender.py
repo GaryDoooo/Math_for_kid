@@ -4,7 +4,7 @@ import subprocess
 
 def send_list(content_list, email_addr):
     filename = "./temp.txt"
-    # subprocess.check_output(["mktemp", "/tmp/du.tmp.XXXXXX"])
+        # subprocess.check_output(["mktemp", "/tmp/du.tmp.XXXXXX"])
     # print "temp file", filename
     temp_file = open(filename, "w")
     for item in content_list:
