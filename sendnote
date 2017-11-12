@@ -1,0 +1,15 @@
+#!/bin/bash
+
+ ssh -p 443 -L 8888:smtp.gmx.com:587 -fCqnTN2 gdu@doooom.iok.la
+ #echo "A file attached." | \
+	mailx -v \
+ 	-r "gdusender@gmx.com" \
+	-s "From z640" \
+	-S smtp="127.0.0.1:8888" \
+	-S smtp-use-starttls \
+	-S smtp-auth=login \
+	-S smtp-auth-user="gdusender@gmx.com" \
+	-S smtp-auth-password="GduSender" \
+	-S ssl-verify=ignore \
+	 gdu@gmx.us
+ pkill -f 8888:smtp.gmx.com:587

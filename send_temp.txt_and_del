@@ -1,4 +1,0 @@
-#!/bin/sh
-
-sendfile $1 /tmp/temp.txt
-rm /tmp/temp.txt
