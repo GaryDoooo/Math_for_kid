@@ -20,7 +20,7 @@ class output:
             return
         self.current_problem = -1
         self.problem_list = problem_list
-
+        self.problem_number = len(problem_list)
         email_sender.send_list(answer_list, email_addr)
         self.print_table(problem_list, self.current_problem)
         self.countdown(60 * time_length)
@@ -48,6 +48,8 @@ class output:
             s = getch_timeout(0.01)
             if s is not None:
                 self.current_problem += 1
+                if self.current_problem >= self.problem_number:
+                    self.ended = True
                 self.print_table(self.problem_list, self.current_problem)
 
     def countdown(self, t):
@@ -62,6 +64,8 @@ class output:
             print timeformat
             time.sleep(1)
             t -= 1
+            if self.ended:
+                break
         self.ended = True
         sp.call('clear', shell=True)
         print('Goodbye!\n\n\n\n\n')

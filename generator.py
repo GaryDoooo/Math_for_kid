@@ -1,4 +1,6 @@
 from numpy import random
+import math
+import numpy as np
 
 
 def two_number_add(
@@ -64,6 +66,167 @@ def two_number_operation(
         elif operator == 4:
             new_problem, new_answer = two_number_div(
                 first_number, second_number)
+        problem_list.append(("[%d] " % i) + new_problem)
+        answer_list.append(("[%d] " % i) + new_answer)
+    return problem_list, answer_list
+
+###### Krypto generator below ######
+
+
+def cal_first_without_bracket(left_operator, right_operator):
+
+    RIGHT_FIRST = 1
+    LEFT_FIRST = 2
+    DOESNT_MATTER = 0
+
+    if left_operator >= 500 or right_operator >= 500:
+        return DOESNT_MATTER
+
+    left_operator = left_operator % 10
+    right_operator = right_operator % 10
+
+    if left_operator == 0:
+        if right_operator <= 1:
+            return DOESNT_MATTER
+        elif 1 < right_operator < 4:
+            return RIGHT_FIRST
+    if left_operator == 1:
+        if right_operator <= 1:
+            return LEFT_FIRST
+        elif 1 < right_operator < 4:
+            return RIGHT_FIRST
+    if left_operator == 2:
+        if 1 < right_operator < 4:
+            return DOESNT_MATTER
+        elif right_operator <= 1:
+            return LEFT_FIRST
+    if left_operator == 3:
+        return LEFT_FIRST
+
+
+def krypto_print(numbers, operators, parent_right_operator=None, parent_left_operator=None):
+
+    RIGHT_FIRST = 1
+    LEFT_FIRST = 2
+    # DOESNT_MATTER = 0
+
+    if len(numbers) == 1:
+        return "%d" % numbers[0]
+    else:
+        calculate_last = np.argmin(np.floor(operators / 2))
+        answer_of_1st_part = krypto_print(numbers[:(calculate_last + 1)], operators[:(
+            calculate_last)], parent_right_operator=operators[calculate_last])
+        answer_of_2nd_part = krypto_print(numbers[(calculate_last + 1):], operators[(
+            calculate_last + 1):], parent_left_operator=operators[calculate_last])
+        if operators[calculate_last] >= 500:
+            answer = answer_of_1st_part + answer_of_2nd_part
+        else:
+            operator = operators[calculate_last] % 10
+            if operator == 0:
+                answer = answer_of_1st_part + " + " + answer_of_2nd_part
+            elif operator == 1:
+                answer = answer_of_1st_part + " - " + answer_of_2nd_part
+            elif operator == 2:
+                answer = answer_of_1st_part + " x " + answer_of_2nd_part
+            elif operator == 3:
+                answer = answer_of_1st_part + " / " + answer_of_2nd_part
+            if parent_right_operator is not None:
+                if cal_first_without_bracket(operator, parent_right_operator) == RIGHT_FIRST:
+                    answer = "(" + answer + ")"
+            if parent_left_operator is not None:
+                if cal_first_without_bracket(parent_left_operator, operator) == LEFT_FIRST:
+                    answer = "(" + answer + ")"
+        return answer
+
+
+def krypto_cal(numbers, operators):
+    #    print numbers, operators
+    if len(numbers) == 1:
+        return numbers[0]
+    else:
+        calculate_last = np.argmin(np.floor(operators / 2))
+#        print calculate_last
+        answer_of_1st_part = krypto_cal(
+            numbers[:calculate_last + 1], operators[:(calculate_last)])
+        answer_of_2nd_part = krypto_cal(
+            numbers[(calculate_last + 1):], operators[(calculate_last + 1):])
+#        print "Returned answer:", answer_of_1st_part, answer_of_2nd_part
+        if math.isnan(answer_of_1st_part) or math.isnan(answer_of_2nd_part):
+            return float('nan')
+        if operators[calculate_last] >= 500:
+            answer = answer_of_1st_part * \
+                10**np.floor(1 + math.log10(answer_of_2nd_part)) + \
+                answer_of_2nd_part
+        else:
+            operator = operators[calculate_last] % 10
+            if operator == 0:
+                answer = answer_of_1st_part + answer_of_2nd_part
+            elif operator == 1:
+                answer = answer_of_1st_part - answer_of_2nd_part
+                if answer < 0:
+                    answer = float('nan')
+            elif operator == 2:
+                answer = answer_of_1st_part * answer_of_2nd_part
+            elif operator == 3:
+                if answer_of_2nd_part == 0 or answer_of_1st_part < answer_of_2nd_part:
+                    answer = float('nan')
+                else:
+                    answer = float(answer_of_1st_part) / \
+                        float(answer_of_2nd_part)
+                    if answer > np.floor(answer):
+                        answer = float('nan')
+        return answer
+
+
+def krypto_gen(
+        number_of_digits, enable_mul, enable_div, enable_num_combine, max_answer=100000):
+    # define operator add 0, sub 1, mul 2, div 3, combine 500
+    # operation sequence 00,10,20,30,40... upto 90 (10 problems)
+    while True:
+        numbers = np.zeros((number_of_digits))
+        for i in range(number_of_digits):
+            numbers[i] = random.randint(9) + 1
+        operators = np.zeros((number_of_digits - 1))
+        if enable_mul and enable_div:
+            for i in range(number_of_digits - 1):
+                operators[i] = np.random.randint(4)
+        if enable_mul and not enable_div:
+            for i in range(number_of_digits - 1):
+                operators[i] = np.random.randint(3)
+        if enable_div and not enable_mul:
+            for i in range(number_of_digits - 1):
+                operators[i] = np.random.randint(3)
+                if operators[i] == 2:
+                    operators[i] = 3
+        sequence = np.arange(number_of_digits - 1) * 10
+        combine = np.zeros((number_of_digits - 1))
+        np.random.shuffle(sequence)
+        if enable_num_combine and number_of_digits > 2:
+            number_of_combine = int(number_of_digits / 3)
+            for i in range(number_of_combine):
+                combine[i] = 500
+            np.random.shuffle(combine)
+       #  print operators.shape, combine.shape, sequence.shape
+        operators = operators + combine + sequence
+        answer = krypto_cal(numbers, operators)
+        if not math.isnan(answer) and max_answer > answer:
+            break
+    new_problem = ""
+    for i in range(number_of_digits):
+        new_problem = new_problem + " %d " % numbers[i]
+    new_answer = krypto_print(numbers, operators)
+    new_problem = new_problem + "= %d" % answer
+    new_answer = new_answer + " = %d" % answer
+    return new_problem, new_answer
+
+
+def krypto(
+        problem_num, number_of_digits, enable_mul, enable_div, enable_num_combine, max_answer):
+    problem_list = []
+    answer_list = []
+    for i in range(1, problem_num + 1):
+        new_problem, new_answer = krypto_gen(
+            number_of_digits, enable_mul, enable_div, enable_num_combine, max_answer)
         problem_list.append(("[%d] " % i) + new_problem)
         answer_list.append(("[%d] " % i) + new_answer)
     return problem_list, answer_list
