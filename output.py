@@ -7,13 +7,20 @@ import threading
 from press_any_key import getch_timeout
 
 
+def single_line_length(input_string):
+    try:
+        return input_string.index("\n")
+    except ValueError:
+        return len(input_string)
+
+
 class output:
-    def __init__(self, problem_list, answer_list, time_length, email_addr):
+    def __init__(self, problem_list, answer_list, time_length, email_addr, send_html=False):
         rows, columns = os.popen('stty size', 'r').read().split()
         ##### Convert the problem list into a table #####
         problem_length = 0
         for problem in problem_list:
-            problem_length = max(len(problem), problem_length)
+            problem_length = max(single_line_length(problem), problem_length)
         self.cols_in_table = int(int(columns) / (problem_length + 8))
         if (int(len(problem_list) / self.cols_in_table) > (int(rows) - 4) / 2):
             print "Too many problems for a small terminal screen... Try less."
@@ -21,14 +28,18 @@ class output:
         self.current_problem = -1
         self.problem_list = problem_list
         self.problem_number = len(problem_list)
-        email_sender.send_list(answer_list, email_addr)
+        if send_html:
+            email_sender.send_list_in_webpage(answer_list, email_addr)
+        else:
+            email_sender.send_list(answer_list, email_addr)
         self.print_table(problem_list, self.current_problem)
         self.countdown(60 * time_length)
 
     def print_table(self, problem_list, highlight_position):
         if 0 <= highlight_position < len(problem_list):
             problem_list[highlight_position] = "\033[2;39m" + \
-                problem_list[highlight_position] + \
+                problem_list[highlight_position].replace(
+                "\n", "\033[22;39m\n\033[2;39m") + \
                 "\033[22;39m"  # \033[2m set print to dim, \033[22m reset back dim
         newlist = []
         for i in range(0, len(problem_list), self.cols_in_table):

@@ -190,14 +190,18 @@ def krypto_gen(
         if enable_mul and enable_div:
             for i in range(number_of_digits - 1):
                 operators[i] = np.random.randint(4)
-        if enable_mul and not enable_div:
+        elif enable_mul and not enable_div:
             for i in range(number_of_digits - 1):
                 operators[i] = np.random.randint(3)
-        if enable_div and not enable_mul:
+        elif enable_div and not enable_mul:
             for i in range(number_of_digits - 1):
                 operators[i] = np.random.randint(3)
                 if operators[i] == 2:
                     operators[i] = 3
+        else:
+            for i in range(number_of_digits - 1):
+                operators[i] = random.randint(2)
+
         sequence = np.arange(number_of_digits - 1) * 10
         combine = np.zeros((number_of_digits - 1))
         np.random.shuffle(sequence)
@@ -229,4 +233,111 @@ def krypto(
             number_of_digits, enable_mul, enable_div, enable_num_combine, max_answer)
         problem_list.append(("[%d] " % i) + new_problem)
         answer_list.append(("[%d] " % i) + new_answer)
+    return problem_list, answer_list
+
+
+###### Fraction math generator below ######
+from fractions import Fraction
+
+
+def pairing_attach(str_list_a, str_list_b):
+    # join elements with same index in two string lists
+    return [i + j for i, j in zip(str_list_a, str_list_b)]
+
+
+def print_fraction(numerator, denominator, mixed_numbers):
+    if mixed_numbers and numerator > denominator:
+        integer = int(numerator / denominator)
+        numerator = numerator % denominator
+    elif mixed_numbers:
+        mixed_numbers = False
+    a = " %d " % numerator
+    b = " %d " % denominator
+    c = "-" * max(len(a), len(b))
+    if len(a) > len(b):
+        b = " " * (len(a) - len(b)) + b
+    else:
+        a = " " * (len(b) - len(a)) + a
+    frac_list = [a, c, b]
+    if mixed_numbers:
+        side = "%d" % integer
+        side_list = [" " * len(side), side, " " * len(side)]
+        frac_list = pairing_attach(side_list, frac_list)
+    return frac_list
+
+
+def fraction_gen(mixed_numbers, digits, same_denominator, operator_in_number):
+    if mixed_numbers:
+        n_digits = digits + 1
+    else:
+        n_digits = digits
+    while True:
+        Numerator1 = random.randint(10**n_digits - 1) + 1
+        Denominator1 = random.randint(10**digits - 2) + 2
+        Denominator2 = random.randint(10**digits - 2) + 2
+        if same_denominator:
+            Denominator2 = Denominator1
+        Numerator2 = random.randint(10**n_digits - 1) + 1
+        a = Fraction(Numerator1, Denominator1)
+        b = Fraction(Numerator2, Denominator2)
+        if a.denominator > 1 and b.denominator > 1:
+            if same_denominator:
+                if a.denominator == b.denominator:
+                    break
+            else:
+                break
+
+    add = ["   ", " + ", "   "]
+    sub = ["   ", " - ", "   "]
+    mul = ["   ", " x ", "   "]
+    div = ["   ", " / ", "   "]
+    #end=["\n","\n"," "]
+    equal = ["   ", " = ", "   "]
+
+    if operator_in_number == 1:
+        answer = a + b
+        operator = add
+    elif operator_in_number == 2:
+        answer = a - b
+        operator = sub
+        if answer < 0:
+            c = a
+            a = b
+            b = c
+            answer = -answer
+    elif operator_in_number == 3:
+        answer = a * b
+        operator = mul
+    elif operator_in_number == 4:
+        answer = a / b
+        operator = div
+
+    a_list = print_fraction(a.numerator, a.denominator, mixed_numbers)
+    b_list = print_fraction(b.numerator, b.denominator, mixed_numbers)
+    ans_list = print_fraction(
+        answer.numerator, answer.denominator, mixed_numbers)
+    new_problem = pairing_attach(a_list, operator)
+    new_problem = pairing_attach(new_problem, b_list)
+    new_problem = pairing_attach(new_problem, equal)
+    new_answer = pairing_attach(new_problem, ans_list)
+    # new_problem=pairing_attach(new_problem,end)
+    # new_answer=pairing_attach(new_answer,end)
+    return new_problem, new_answer
+
+
+def two_fraction_operation(
+        mixed_numbers, digits, same_denominator, operator_in_number, problem_num):
+    # a fraction number print out will be stored in a list of 3 str
+    # i.e. 3 lines of the fraction print.
+    problem_list = []
+    answer_list = []
+    for i in range(1, problem_num + 1):
+        new_problem, new_answer = fraction_gen(
+            mixed_numbers, digits, same_denominator, operator_in_number)
+        index = "[%d] " % i
+        index_list = [index, " " * len(index), " " * len(index)]
+        new_problem = pairing_attach(index_list, new_problem)
+        new_answer = pairing_attach(index_list, new_answer)
+        problem_list.append("\n".join(new_problem))
+        answer_list.append("\n".join(new_answer))
     return problem_list, answer_list
