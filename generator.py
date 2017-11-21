@@ -35,7 +35,10 @@ def two_number_mul(
 def two_number_div(
         first_number, second_number):
     a = random.randint(10**(first_number - 1), 10**first_number)
-    b = random.randint(10**(second_number - 1), 10**second_number)
+    while True:
+        b = random.randint(10**(second_number - 1), 10**second_number)
+        if b != 1:
+            break
     new_problem = "%d / %d = " % (a, b)
     shang = int(a / b)
     remain = a % b
