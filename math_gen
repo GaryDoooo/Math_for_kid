@@ -16,8 +16,8 @@ def dispatch(time_length,
              second_number,
              operator,
              problem_num,
-             email_addr
-             ):
+             email_addr,
+             no_one):
     ###### input validation ########
     if not (0 < time_length <= 1000):
         print "Expect time within 1 to 1000 minutes. Set time to 10 min."
@@ -43,10 +43,14 @@ def dispatch(time_length,
         print "We usually give at least one problem or no more than 200... Set to 10."
         press_any_key_to_continue()
         problem_num = 10
+    if no_one == "on":
+        no_one = True
+    else:
+        no_one = False
 
     ##### Generate problems. #####
     problem_list, answer_list = generator.two_number_operation(
-        first_number, second_number, operator_in_number, problem_num)
+        first_number, second_number, operator_in_number, problem_num, no_one)
     # problem and answer should be lists of strings
 
     ##### Output answer and problems #####
@@ -79,6 +83,10 @@ if __name__ == "__main__":
                         type=str,
                         default="gdu@gmx.us",
                         help='The Email address to receive ansers and reminders.')
-    parse_args, unknown = parser.parse_known_args()
+    parser.add_argument('--no-one',
+                        type=str,
+                        default="on",
+                        help='If division and multiple has one, like 3x1 or 45/1. Default is on.')
 
+    parse_args, unknown = parser.parse_known_args()
     dispatch(**parse_args.__dict__)

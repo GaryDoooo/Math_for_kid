@@ -24,20 +24,27 @@ def two_number_sub(
 
 
 def two_number_mul(
-        first_number, second_number):
-    a = random.randint(10**(first_number - 1), 10**first_number)
-    b = random.randint(10**(second_number - 1), 10**second_number)
+        first_number, second_number, no_one=True):
+    while True:
+        a = random.randint(10**(first_number - 1), 10**first_number)
+        b = random.randint(10**(second_number - 1), 10**second_number)
+        if a != 1 and b != 1:
+            break
+        if not no_one:
+            break
     new_problem = "%d x %d = " % (a, b)
     new_answer = new_problem + "%d" % (a * b)
     return new_problem, new_answer
 
 
 def two_number_div(
-        first_number, second_number):
+        first_number, second_number, no_one=True):
     a = random.randint(10**(first_number - 1), 10**first_number)
     while True:
         b = random.randint(10**(second_number - 1), 10**second_number)
         if b != 1:
+            break
+        if not no_one:
             break
     new_problem = "%d / %d = " % (a, b)
     shang = int(a / b)
@@ -53,7 +60,8 @@ def two_number_operation(
         first_number=3,
         second_number=3,
         operator=1,
-        problem_num=10):
+        problem_num=10,
+        no_one=True):
     problem_list = []
     answer_list = []
     for i in range(1, problem_num + 1):
@@ -65,10 +73,10 @@ def two_number_operation(
                 first_number, second_number)
         elif operator == 3:
             new_problem, new_answer = two_number_mul(
-                first_number, second_number)
+                first_number, second_number, no_one)
         elif operator == 4:
             new_problem, new_answer = two_number_div(
-                first_number, second_number)
+                first_number, second_number, no_one)
         problem_list.append(("[%d] " % i) + new_problem)
         answer_list.append(("[%d] " % i) + new_answer)
     return problem_list, answer_list
