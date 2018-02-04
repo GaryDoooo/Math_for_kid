@@ -1,7 +1,8 @@
 #!/bin/bash
 
- ssh -p 443 -L 8888:smtp.gmx.com:587 -fCqnTN2 gdu@doooom.iok.la
+ ssh -p 51443 -L 8888:smtp.gmx.com:587 -fCqnTN2 gdu@172.18.18.1
 
+if [ -z "$1" ]; then
  mailx  -v \
  	-r "gdusender@gmx.com" \
 	-s "From z640" \
@@ -12,4 +13,18 @@
 	-S smtp-auth-password="Gdusender" \
 	-S ssl-verify=ignore \
 	 gdu@gmx.us
+else
+ mailx  -v \
+	-a "$1" \
+ 	-r "gdusender@gmx.com" \
+	-s "From z640" \
+	-S smtp="127.0.0.1:8888" \
+	-S smtp-use-starttls \
+	-S smtp-auth=login \
+	-S smtp-auth-user="gdusender@gmx.com" \
+	-S smtp-auth-password="Gdusender" \
+	-S ssl-verify=ignore \
+	 gdu@gmx.us
+fi
+
  pkill -f 8888:smtp.gmx.com:587

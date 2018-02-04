@@ -13,7 +13,7 @@ def send_list_in_webpage(content_list, email_addr):
             "\n", "<br>").replace(" ", "&nbsp") + "<br>")
     temp_file.write("</font></body></html>")
     temp_file.close()
-    subprocess.call(["mv", filename, "/home/du/httpd/math/"])
+    # subprocess.call(["mv", filename, "/home/du/httpd/math/"])
 
     filename_for_email = "./temp.txt"
     temp_file = open(filename_for_email, "w")
@@ -22,9 +22,11 @@ def send_list_in_webpage(content_list, email_addr):
 
     pipe1 = subprocess.Popen(
         ("cat", filename_for_email), stdout=subprocess.PIPE)
-    screen_output = subprocess.check_output("./sendnote", stdin=pipe1.stdout)
+    screen_output = subprocess.check_output(
+        ("./sendnote", filename), stdin=pipe1.stdout)
     print screen_output
     subprocess.call(["rm", filename_for_email])
+    subprocess.call(["rm", filename])
 
 
 def send_list_in_html(content_list, email_addr):
