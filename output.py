@@ -28,10 +28,10 @@ class output:
         self.current_problem = -1
         self.problem_list = problem_list
         self.problem_number = len(problem_list)
-        if send_html:
-            email_sender.send_list_in_webpage(answer_list, email_addr)
-        else:
-            email_sender.send_list(answer_list, email_addr)
+        #  if send_html:
+            #  email_sender.send_list_in_webpage(answer_list, email_addr)
+        #  else:
+            #  email_sender.send_list(answer_list, email_addr)
         self.print_table(problem_list, self.current_problem)
         self.countdown(60 * time_length)
 

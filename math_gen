@@ -12,8 +12,11 @@ from press_any_key import press_any_key_to_continue
 
 
 def dispatch(time_length,
-             first_number,
-             second_number,
+             first_num_max,
+             second_num_max,
+             result_max,
+             first_num_min,
+             second_num_min,
              operator,
              problem_num,
              email_addr,
@@ -23,14 +26,18 @@ def dispatch(time_length,
         print "Expect time within 1 to 1000 minutes. Set time to 10 min."
         press_any_key_to_continue()
         time_length = 10
-    if not (0 < first_number <= 18):
-        print "Digits of a number is expected between 1 and 18. Set to 3."
+    if not (0 < first_num_max <= 1e8):
+        print "Digits of a number is expected between 1 and 1E8. Set to 100."
         press_any_key_to_continue()
-        first_number = 3
-    if not (0 < second_number <= 18):
-        print "Digits of a number is expected between 1 and 18. Set to 3."
+        first_num_max = 100
+    if not (0 < second_num_max <= 1e8):
+        print "Digits of a number is expected between 1 and 1E8. Set to 100."
         press_any_key_to_continue()
-        second_number = 3
+        second_num_max = 100
+    if (result_max == 0):
+        result_max = first_num_max * second_num_max
+    if not (0 < result_max <= 2e8):
+        result_max == 2e8
     operator_in_number = 1  # 1 is add
     #  print operator
     if (operator == "s"):
@@ -50,7 +57,8 @@ def dispatch(time_length,
 
     ##### Generate problems. #####
     problem_list, answer_list = generator.two_number_operation(
-        first_number, second_number, operator_in_number, problem_num, no_one)
+        first_num_max, second_num_max, result_max,
+        first_num_min, second_num_min, operator_in_number, problem_num, no_one)
     # problem and answer should be lists of strings
 
     ##### Output answer and problems #####
@@ -63,14 +71,29 @@ if __name__ == "__main__":
                         required=True,
                         type=int,
                         help='How many minutes to finish the problem set. After that an email reminder will be sent.')
-    parser.add_argument('--first-number',
+    parser.add_argument('--first-num-max',
                         required=True,
                         type=int,
-                        help='How many digits the first number has.')
-    parser.add_argument('--second-number',
+                        help='The max value the first number is smaller or equal to.')
+    parser.add_argument('--second-num-max',
                         required=True,
                         type=int,
-                        help='How many digits the second number has.')
+                        help='The max value the second nubmer is smaller or equal to.')
+    parser.add_argument('--result-max',
+                        required=False,
+                        type=int,
+                        default=0,
+                        help='The max value the answer is smaller or equal to.')
+    parser.add_argument('--first-num-min',
+                        required=False,
+                        type=int,
+                        default=2,
+                        help='The min value the first number is larger or equal to.')
+    parser.add_argument('--second-num-min',
+                        required=False,
+                        type=int,
+                        default=2,
+                        help='The min value the second nubmer is larger or equal to.')
     parser.add_argument('--operator',
                         type=str,
                         default='a',

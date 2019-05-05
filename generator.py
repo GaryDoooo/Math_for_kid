@@ -1,21 +1,28 @@
+from fractions import Fraction
 from numpy import random
 import math
 import numpy as np
 
 
 def two_number_add(
-        first_number, second_number):
-    a = random.randint(10**(first_number - 1), 10**first_number)
-    b = random.randint(10**(second_number - 1), 10**second_number)
+        first_num_max, first_num_min, second_num_max, second_num_min, result_max):
+    while True:
+        a = random.randint(first_num_min, first_num_max+1)
+        b = random.randint(second_num_min, second_num_max+1)
+        if a+b <= result_max:
+            break
     new_problem = "%d + %d = " % (a, b)
     new_answer = new_problem + "%d" % (a + b)
     return new_problem, new_answer
 
 
 def two_number_sub(
-        first_number, second_number):
-    a = random.randint(10**(first_number - 1), 10**(first_number))
-    b = random.randint(10**(second_number - 1), 10**second_number)
+        first_num_max, first_num_min, second_num_max, second_num_min):
+    a = random.randint(first_num_min, first_num_max+1)
+    b = random.randint(second_num_min, second_num_max+1)
+    #  first_number, second_number):
+    #  a = random.randint(10**(first_number - 1), 10**(first_number))
+    #  b = random.randint(10**(second_number - 1), 10**second_number)
     big = max(a, b)
     small = min(a, b)
     new_problem = "%d - %d = " % (big, small)
@@ -24,11 +31,11 @@ def two_number_sub(
 
 
 def two_number_mul(
-        first_number, second_number, no_one=True):
+        first_num_max, first_num_min, second_num_max, second_num_min, result_max, no_one=True):
     while True:
-        a = random.randint(10**(first_number - 1), 10**first_number)
-        b = random.randint(10**(second_number - 1), 10**second_number)
-        if a != 1 and b != 1:
+        a = random.randint(first_num_min, first_num_max+1)
+        b = random.randint(second_num_min, second_num_max+1)
+        if a != 1 and b != 1 and a*b <= result_max:
             break
         if not no_one:
             break
@@ -38,7 +45,7 @@ def two_number_mul(
 
 
 def two_number_div(
-        first_number, second_number, no_one=True):
+        first_num_max, first_num_min, second_num_max, second_num_min, no_one=True):
     a = random.randint(10**(first_number - 1), 10**first_number)
     while True:
         b = random.randint(10**(second_number - 1), 10**second_number)
@@ -55,10 +62,17 @@ def two_number_div(
         new_answer = new_problem + "%d R%d" % (shang, remain)
     return new_problem, new_answer
 
+    #  problem_list, answer_list = generator.two_number_operation(
+    #  first_num_max, second_num_max, result_max,
+    #  first_num_min, second_num_min, operator_in_number, problem_num, no_one)
+
 
 def two_number_operation(
-        first_number=3,
-        second_number=3,
+        first_num_max=100,
+        second_num_max=100,
+        result_max=10000,
+        first_num_min=2,
+        second_num_min=2,
         operator=1,
         problem_num=10,
         no_one=True):
@@ -67,16 +81,19 @@ def two_number_operation(
     for i in range(1, problem_num + 1):
         if operator == 1:
             new_problem, new_answer = two_number_add(
-                first_number, second_number)
+                first_num_max, first_num_min, second_num_max,
+                second_num_min, result_max)
         elif operator == 2:
             new_problem, new_answer = two_number_sub(
-                first_number, second_number)
+                first_num_max, first_num_min, second_num_max, second_num_min)
         elif operator == 3:
             new_problem, new_answer = two_number_mul(
-                first_number, second_number, no_one)
+                first_num_max, first_num_min, second_num_max,
+                second_num_min, result_max, no_one)
         elif operator == 4:
             new_problem, new_answer = two_number_div(
-                first_number, second_number, no_one)
+                first_num_max, first_num_min, second_num_max,
+                second_num_min, no_one)
         problem_list.append(("[%d] " % i) + new_problem)
         answer_list.append(("[%d] " % i) + new_answer)
     return problem_list, answer_list
@@ -248,7 +265,6 @@ def krypto(
 
 
 ###### Fraction math generator below ######
-from fractions import Fraction
 
 
 def pairing_attach(str_list_a, str_list_b):
